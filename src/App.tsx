@@ -34,6 +34,8 @@ const App = () => {
   const goToNextTrack = () => {
     setTrackIndex(trackIndex + 1);
   };
+  const [isLoading, setIsLoading] = useState(false);
+  // setIsLoading(false);
   const { data: tracks } = useQuery({
     queryKey: ['tracks'],
     queryFn: fetchTracks,
@@ -57,7 +59,12 @@ const App = () => {
         <audio src={trackUrls[trackIndex]} autoPlay controls />
         <button onClick={goToNextTrack}>Next track</button>
       </div>
-      <p> La longueur des tracks est {tracks.length}</p>
+      <p> La longueur des tracks est {tracks.length}.</p>
+      <p>Le titre de la chanson est {tracks[0]?.track.name} </p>
+      <p>HHH {isLoading} </p>
+      {/* <div className="App-content">
+        <p>HHH {isLoading}</p>
+      </div> */}
     </div>
   );
 };
