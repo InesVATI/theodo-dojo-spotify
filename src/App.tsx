@@ -34,15 +34,24 @@ const App = () => {
   const goToNextTrack = () => {
     setTrackIndex(trackIndex + 1);
   };
-  const [isLoading, setIsLoading] = useState(false);
-  // setIsLoading(false);
-  const { data: tracks } = useQuery({
+  // const [isLoading, setIsLoading] = useState(false);
+
+  const { data: tracks, isLoading } = useQuery({
     queryKey: ['tracks'],
     queryFn: fetchTracks,
   });
+  if (isLoading) {
+    return <p>Loading... {isLoading}</p>;
+  }
+
   if (tracks === undefined) {
     return <p> Warning, tracks is undefined </p>;
   }
+
+  const AlbumCover = ({ currentTrack }: { currentTrack: number }) => {
+    const src = tracks[currentTrack]?.track.album.images[0]?.url; // A changer ;)
+    return <img src={src} style={{ width: 400, height: 400 }} />;
+  };
 
   console.log(tracks);
   return (
@@ -56,15 +65,17 @@ const App = () => {
         {/* <audio src={trackUrls[1]} autoPlay controls /> */}
       </div>
       <div className="App-buttons">
-        <audio src={trackUrls[trackIndex]} autoPlay controls />
+        <audio src={tracks[trackIndex]?.track.preview_url} autoPlay controls />
         <button onClick={goToNextTrack}>Next track</button>
+        <button onClick={goToNextTrack}>
+          {tracks[trackIndex]?.track.name}
+        </button>
       </div>
       <p> La longueur des tracks est {tracks.length}.</p>
-      <p>Le titre de la chanson est {tracks[0]?.track.name} </p>
-      <p>HHH {isLoading} </p>
-      {/* <div className="App-content">
-        <p>HHH {isLoading}</p>
-      </div> */}
+      <p>Le titre de la chanson est {tracks[0]?.track.name}. </p>
+      {/* {setIsLoading(false)} */}
+      <p>{isLoading ? 'true' : 'false'}</p>
+      <AlbumCover currentTrack={trackIndex} />
     </div>
   );
 };
