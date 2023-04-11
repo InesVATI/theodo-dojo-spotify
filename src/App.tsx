@@ -1,22 +1,24 @@
 import logo from './assets/logo.svg';
 import './App.css';
+import { fetchTracks } from './lib/fetchTracks';
 import { useState } from 'react';
-const apiToken = '';
+import { useQuery } from '@tanstack/react-query';
+// const apiToken = '';
 
-export const fetchTracks = async () => {
-  const response = await fetch('https://api.spotify.com/v1/me/tracks', {
-    method: 'GET',
-    headers: {
-      Authorization: 'Bearer ' + apiToken,
-    },
-  });
-  if (!response.ok) {
-    throw new Error(`Fetching tracks failed with status ${response.status}`);
-  }
-  const data = (await response.json()) as { items: unknown[] };
+// export const fetchTracks = async () => {
+//   const response = await fetch('https://api.spotify.com/v1/me/tracks', {
+//     method: 'GET',
+//     headers: {
+//       Authorization: 'Bearer ' + apiToken,
+//     },
+//   });
+//   if (!response.ok) {
+//     throw new Error(`Fetching tracks failed with status ${response.status}`);
+//   }
+//   const data = (await response.json()) as { items: unknown[] };
 
-  return data.items;
-};
+//   return data.items;
+// };
 
 const trackUrls = [
   'https://p.scdn.co/mp3-preview/742294f35af9390e799dd96c633788410a332e52',
@@ -32,12 +34,20 @@ const App = () => {
   const goToNextTrack = () => {
     setTrackIndex(trackIndex + 1);
   };
+  const { data: tracks } = useQuery({
+    queryKey: ['tracks'],
+    queryFn: fetchTracks,
+  });
+  if (tracks === undefined) {
+    return <p> Warning, tracks is undefined </p>;
+  }
 
+  console.log(tracks);
   return (
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
-        <h1 className="App-title">Bienvenue sur le blind test</h1>
+        <h1 className="App-title">Bienvenue sur le nouveau Spotify</h1>
       </header>
       <div className="App-images">
         <p>C'est parti !</p>
@@ -47,6 +57,7 @@ const App = () => {
         <audio src={trackUrls[trackIndex]} autoPlay controls />
         <button onClick={goToNextTrack}>Next track</button>
       </div>
+      <p> La longueur des tracks est {tracks.length}</p>
     </div>
   );
 };
